@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Maximal сhains of tiles</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* 100% viewport height */
+        }
+
+        #upper-panel {
+            flex: 0 0 3%; /* 5% height, do not grow or shrink */
+            max-width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            flex-direction: row;
+        }
+
+        #bottom-panel {
+            flex: 1; /* Take remaining height */
+            display: flex;
+            flex-direction: row;
+        }
+
+        #left-panel {
+            flex: 0 0 30%;            
+            padding: 20px;
+            /* display: flex;
+            flex-direction: row*/
+        }
+        /*#divDesc {
+            flex: 100 0 50%;
+            padding: 20px;*/
+            /* display: flex;
+            flex-direction: row*/
+        /*}*/
+
+        #right-panel1 {
+            flex: 0 0 30%;
+            padding: 20px;
+        }
+
+        #right-panel2 {
+            flex: 0 0 10%;
+            padding: 20px;
+        }
+
+        #right-panel3 {
+            flex: 0 0 60%;
+            padding: 20px;
+        }
+
+        .domino-tile {
+            /*border: 1px solid black;   */
+            font-size: 50px;
+            cursor: pointer;
+            position: absolute;
+            line-height: .55
+        }
+    </style>
+    <script>
+        
+        
+    </script>
+</head>
+<body>
+    <div id="upper-panel" style="font-size:smaller;">
+        <h1 style="text-align:center">Chains of tiles</h1>
+        <div id="left-panel">
+            <div id="divDesc" >
+                The full set of domino tiles is shown in horizontal positions.<br />
+                Each tile except doubles is shown twice.<br />
+                There 2 ways to select a subset of tiles:<br />
+                the first one is random choice and the second one is according
+                click on a tile. <br />
+                Once you have completed your selection, you click the button "Build Chains"<br />
+                and all correct chaines containing <br />
+                all values from the selected tiles                 will be shown.
+            </div>
+        </div>
+      
+
+
+    </div>
+    <div id="bottom-panel">
+        <div id="right-panel1">
+            <h3 style="margin-top:0;margin-bottom:5px">Options</h3>
+
+            <fieldset style="width:300px">
+                <label>
+                    <input id="radRandomChoice" type="radio" name="radChoice"
+                           checked />
+                    Random Choice
+                </label>
+                <label>
+                    <input id="radUserChoice" type="radio" name="radChoice"
+                            />
+                    User Choice
+                </label>
+            </fieldset>
+            <br />
+            <label>
+                Cardinality
+                <input id="txtCardinality" type="text" value="7"
+                       style="width:20px" />
+            </label>
+            <br /><br />
+                  <fieldset style="width:300px">
+                      <input id="btnBuildChains" type="button"
+                             value="Build chains" />
+                      <input id="btnClearOutput" type="button"
+                             value="Clear"  />
+
+                  </fieldset>
+        </div>
+        <div id="right-panel2">
+            
+        </div>
+        <div id="right-panel3">
+
+        </div>
+    </div>
+
+    <script src="algChatGPT.js"></script>
+    <script src="Logic.js"></script>
+   
+</body>
+</html>
