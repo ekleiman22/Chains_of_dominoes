@@ -83,6 +83,18 @@ class Logic {
             }
         }
     }
+
+    /**
+     * This method handles click on a div containing a tile
+     *  and having id=tile_id.
+     * Input parameter tile_id has structure "tile_i_j"
+     * where i is row number and j is column number
+     * in square matrix of tiles or, the same,
+     * values of left side and right side of a tile
+     * Using these values compute an index of the tile
+     * and then draw the tile in  container "right-panel2"
+     * @param {number} tile_id
+     */
     handleTileClick(tile_id) {
         //alert(tile_id);
         let sep = "_";
@@ -105,6 +117,13 @@ class Logic {
             this.drawSelectedTile(selectedContainer, k, cardinality);
         }
     }
+    /**
+     * This method builds random set of dominos
+     * and shows them right-panel2
+     * It takes as input a value from txtCardinality
+     * that will be number of tiles and builds
+     * this.currentSubset 
+     * */
     randomChoice() {
         var n = parseInt(document.getElementById("txtCardinality").value);
         var count = 0;
@@ -126,6 +145,14 @@ class Logic {
             }
         }
     }
+
+    /**
+     * This method draws a tile in the container
+     * @param {HTMLDivElement} container
+     * @param {number} ind - index of a tile in allSominos
+     * @param {number} count - order number of a tile
+     * in current subset
+     */
     drawSelectedTile(container,ind, count) {
         
         let offsets = container.getBoundingClientRect();
@@ -140,9 +167,11 @@ class Logic {
         container.appendChild(tileElement);
     }
 
+    /**This method builds and shows chains of tiles
+     * according to current subset of tiles
+     * */
     buildChains() {
-        let arrValues = [];// values on sides of tiles that belong to
-            //tiles from currentSubset
+        
         let matrix = [];//adjacency matrix
         
         if (!document.getElementById("radUserChoice").checked)
@@ -154,39 +183,7 @@ class Logic {
             alert("No tiles were selected");
             return;
         }
-            //build graph adjacency matrix
-            //Firstly find all values on sides of tiles that belong to
-            //tiles from currentSubset
-            
-            for (let i = 0; i < this.currentSubset.length; i++) {
-                let tile = this.currentSubset[i];
-                let ind = tile.index;
-                tile.left = Math.floor(ind / 7);
-                tile.right = ind - 7 * tile.left;
-                if (!arrValues.includes(tile.left))
-                    arrValues.push(tile.left);
-                if (!arrValues.includes(tile.right))
-                    arrValues.push(tile.right);
-            }
-            let l = arrValues.length;
-            
-            for (let i = 0; i < l; i++) {
-                let value1 = arrValues[i];
-                let row = [];
-                for (let j = 0; j < l; j++) {
-                    let value2 = arrValues[j];
-                    row[j] = 0;
-                    for (let k = 0; k < this.currentSubset.length; k++) {
-                        let tile = this.currentSubset[k];
-                        if (tile.left == value1 && tile.right == value2 ||
-                            tile.right == value1 && tile.left == value2)
-                            row[j] = 1;
-                    }
-                }
-                matrix[i] = row;
-            }
-            
-        
+        matrix = this.buildAjacencyMatrix();
         const pathsContainer = document.getElementById("right-panel3");
         pathsContainer.innerHTML = "";
         let paths = findHamiltonianPaths(matrix);
@@ -194,27 +191,106 @@ class Logic {
             alert("No paths were found");
             return;
         }
+        let countRightPaths = 0;
         for (var i = 0; i < paths.length; i++) {
-            this.showPath(pathsContainer, arrValues, paths[i], i)
+            let result = this.showPath(pathsContainer, paths[i], i);
+            if (result)
+                countRightPaths++;
+        }
+        if (countRightPaths == 0) {
+            alert("No paths were found")
         }
     }
-    showPath(container, values,path,pathIndex) {
-        //path is an array of indices of elements of array values
-        //each 2 neighboring indices corresponds a tile
+
+    /**
+     * This method builds an adjacency matrix of a graph
+     * according the rules:
+     * each tile from currentSubset will be a vertex
+     * in this graph. Two vertices are connected
+     * if the have one common value on their sides
+     * */
+    buildAjacencyMatrix()
+    {
+        
+        let matrix = [];//adjacency matrix
+        for (let i = 0; i < this.currentSubset.length; i++) {
+            let tile1 = this.currentSubset[i];
+            this.setTileSides(tile1);
+            let row =
+                Array(this.currentSubset.length).fill(0);;
+            for (var j = 0; j < this.currentSubset.length; j++) {
+                if (i == j)
+                    row[j] = 0;
+                else {
+                    let tile2 = this.currentSubset[j];
+                    this.setTileSides(tile2);
+                    if (tile1.left == tile2.left ||
+                        tile1.left == tile2.right ||
+                        tile1.right == tile2.right ||
+                        tile1.right == tile2.left)
+                        row[j] = 1;
+                }
+            }//end cycle by j
+            matrix[i] = row;
+        }//end cycle by i
+        return matrix;
+    }
+
+    /**
+     * Given a tile get its index (in array of allDominos)
+     * and compute its left and right side values
+     * @param {Domino} tile
+     */
+    setTileSides(tile) {
+        let ind = tile.index;
+        tile.left = Math.floor(ind / 7);
+        tile.right = ind - 7 * tile.left;
+    }
+
+    /**
+     * This method accepts a path
+     * consisting of all tiles of current subset such that
+     * any consequent tiles contain common value on
+     * one of their sides. But not all such path is suitable
+     * for correct chain of tiles. For example
+     * if the first 2 tiles in the path are (0,1) and (1,2)
+     * and the third one is (1,3) that it cannot be
+     * right successor for (1,2) because 1 is used on the
+     * left side of the second tile. So such path won't
+     * be used for a chain
+     * @param {HTMLDivElement} container
+     * @param {Array} path
+     * @param {number} pathIndex
+     */
+    showPath(container, path, pathIndex)
+    {
+        //path contains indices of tiles in current subset
         let pathTiles = [];
-        for (var i = 0; i < path.length-1; i++) {
-            let value1 = values[path[i]];
-            let value2 = values[path[i + 1]];
-            let ind = 0;
-            //if (value1 > value2)
-                ind = value1 * 7 + value2;
-            //else
-            //    ind = value2 * 7 + value1;
-            pathTiles.push(this.allDominos[ind]);
+        let lastTile = this.currentSubset[path[0]];
+        if (path.length > 1)
+        {
+            //define true position of the first tile in the path
+            let tile2 = this.currentSubset[path[1]];
+            if (lastTile.right != tile2.left &&
+                lastTile.right != tile2.right)
+                lastTile = this.reverseTile(lastTile);
         }
+        for (var i = 1; i < path.length; i++)
+        {            
+            pathTiles.push(lastTile);
+            let tile = this.currentSubset[path[i]];
+            if (lastTile.right != tile.left &&
+                lastTile.right != tile.right)
+                return false;
+            if (lastTile.right != tile.left)
+                tile = this.reverseTile(tile);
+            lastTile = tile;
+        }
+        pathTiles.push(lastTile);
+        //pathTiles were built
         for (var i = 0; i < pathTiles.length; i++) {
             let offsets = container.getBoundingClientRect();
-            let top = offsets.top+50;
+            let top = offsets.top + 50;
             let left = offsets.left;
             const tileElement = document.createElement('div');
             tileElement.style.top = (top + pathIndex * this.yStep) + "px";
@@ -223,7 +299,20 @@ class Logic {
             tileElement.textContent = pathTiles[i].unicode;
             container.appendChild(tileElement);
         }
+        return true;
     }
+    reverseTile(tile)
+    {   
+        let i = tile.right;
+        let j = tile.left;
+        let k = 7 * i + j;
+        let reversed = this.allDominos[k];
+        reversed.left = i;
+        reversed.right = j;
+        return reversed;
+    }
+
+   
     clearOutput() {
         document.getElementById("txtCardinality").value = "";
         document.getElementById("right-panel2").textContent = "";
