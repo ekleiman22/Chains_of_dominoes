@@ -6,7 +6,7 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
+            padding-bottom: 0;
             display: flex;
             flex-direction: column;
             height: 100vh; /* 100% viewport height */
@@ -18,6 +18,7 @@
             margin-left: auto;
             margin-right: auto;
             flex-direction: row;
+            padding-bottom:10px
         }
 
         #bottom-panel {
@@ -40,18 +41,22 @@
         /*}*/
 
         #right-panel1 {
-            flex: 0 0 30%;
-            padding: 20px;
+            flex: 0 0 20%;
+            padding: 5px;
         }
 
         #right-panel2 {
-            flex: 0 0 10%;
-            padding: 20px;
+            flex: 0 0 5%;
+            padding: 10px;
         }
 
         #right-panel3 {
-            flex: 0 0 60%;
-            padding: 20px;
+            flex: 0 0 35%;
+            padding: 10px;
+        }
+        #right-panel4 {
+            flex: 0 0 35%;
+            padding: 10px;
         }
 
         .domino-tile {
@@ -71,18 +76,18 @@
     <div id="upper-panel" style="font-size:smaller;">
         <h1 style="text-align:center">Chains of tiles</h1>
         <div id="left-panel">
-            <div id="divDesc" >
+            <div id="divDesc">
                 The full set of domino tiles is shown in horizontal positions.<br />
                 Each tile except doubles is shown twice.<br />
                 There 2 ways to select a subset of tiles:<br />
                 the first one is random choice and the second one is according
                 click on a tile. <br />
                 Once you have completed your selection, you click the button "Build Chains"<br />
-                and all correct chaines containing 
+                and all correct chaines containing
                 all selected tiles will be shown.
             </div>
         </div>
-      
+
 
 
     </div>
@@ -97,8 +102,7 @@
                     Random Choice
                 </label>
                 <label>
-                    <input id="radUserChoice" type="radio" name="radChoice"
-                            />
+                    <input id="radUserChoice" type="radio" name="radChoice" />
                     User Choice
                 </label>
             </fieldset>
@@ -109,24 +113,28 @@
                        style="width:20px" />
             </label>
             <br /><br />
-                  <fieldset style="width:300px">
-                      <input id="btnBuildChains" type="button"
-                             value="Build chains" />
-                      <input id="btnClearOutput" type="button"
-                             value="Clear"  />
+            <fieldset style="width:300px">
+                <input id="btnBuildChains" type="button"
+                       value="Build chains" />
+                <input id="btnClearOutput" type="button"
+                       value="Clear" />
 
-                  </fieldset>
+            </fieldset>
         </div>
         <div id="right-panel2">
-            
+
         </div>
         <div id="right-panel3">
+
+        </div>
+        <div id="right-panel4">
 
         </div>
     </div>
 
     <script src="algChatGPT.js"></script>
     <script src="Logic.js"></script>
-   
+    <script src="chainsChatGPT.js"></script>
+    
 </body>
 </html>

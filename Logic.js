@@ -17,6 +17,9 @@ class Logic {
         document.getElementById("btnBuildChains").addEventListener("click", () => {
             this.buildChains();
         });
+        document.getElementById("btnBuildChains").addEventListener("click", () => {
+            this.buildChains2();
+        });
         document.getElementById("btnClearOutput").addEventListener("click", () => {
             this.clearOutput();
         });
@@ -167,6 +170,61 @@ class Logic {
         container.appendChild(tileElement);
     }
 
+    /**
+     * This method uses method generateDominoChains
+     * */
+    buildChains2() {
+        //if (!document.getElementById("radUserChoice").checked) {
+        //    this.randomChoice();
+        //}
+        //end of random choice
+        const pathsContainer = document.getElementById("right-panel4");
+        pathsContainer.innerHTML = "";
+        let tiles = [];
+        for (let i = 0; i < this.currentSubset.length; i++) {
+            let tile = this.currentSubset[i];
+            this.setTileSides(tile);
+            tiles.push([tile.left,tile.right]);
+        }
+        let chains = generateDominoChains(tiles);
+        if (chains.length == 0) {
+            alert("No paths were found");
+            return;
+        }
+        const header = document.createElement('h3');
+        header.textContent = "The second algorithm"
+        pathsContainer.appendChild(header);
+        //Here chains is array of pairs [left,right]
+        //for each pair find corresponding tile in
+        // allDominos
+        for (var i = 0; i < chains.length; i++) {
+            let pathTiles = [];
+            let chain = chains[i]
+            for (var j = 0; j < chain.length; j++) {
+                let [left, right] = chain[j];
+                let k = 7 * left + right;
+                pathTiles.push(this.allDominos[k]);
+            }
+            this.showPath2(pathsContainer, pathTiles, i);
+        }
+    }
+
+    showPath2(container, pathTiles, pathIndex) {
+       
+        for (var i = 0; i < pathTiles.length; i++) {
+            let offsets = container.getBoundingClientRect();
+            let top = offsets.top + 100;
+            let left = offsets.left;
+            const tileElement = document.createElement('div');
+            tileElement.style.top = (top + pathIndex * this.yStep) + "px";
+            tileElement.style.left = (left + i * this.xStep) + "px";
+            tileElement.className = 'domino-tile';
+            tileElement.textContent = pathTiles[i].unicode;
+            container.appendChild(tileElement);
+        }
+        return true;
+    }
+
     /**This method builds and shows chains of tiles
      * according to current subset of tiles
      * */
@@ -186,14 +244,23 @@ class Logic {
         matrix = this.buildAjacencyMatrix();
         const pathsContainer = document.getElementById("right-panel3");
         pathsContainer.innerHTML = "";
+        //alternative block to findHamiltonianPaths(matrix);
+        //not finished;
+        //let paths = findChains(this.currentSubset);
+        //end of alternative block
+
         let paths = findHamiltonianPaths(matrix);
         if (paths.length == 0) {
             alert("No paths were found");
             return;
         }
+        const header = document.createElement('h3');
+        header.textContent = "The first algorithm"
+        pathsContainer.appendChild(header);
         let countRightPaths = 0;
         for (var i = 0; i < paths.length; i++) {
-            let result = this.showPath(pathsContainer, paths[i], i);
+            let result =
+                this.showPath(pathsContainer, paths[i], countRightPaths);
             if (result)
                 countRightPaths++;
         }
@@ -290,7 +357,7 @@ class Logic {
         //pathTiles were built
         for (var i = 0; i < pathTiles.length; i++) {
             let offsets = container.getBoundingClientRect();
-            let top = offsets.top + 50;
+            let top = offsets.top + 100;
             let left = offsets.left;
             const tileElement = document.createElement('div');
             tileElement.style.top = (top + pathIndex * this.yStep) + "px";
@@ -311,12 +378,21 @@ class Logic {
         reversed.right = j;
         return reversed;
     }
-
+    addMirrorTiles() {
+        let arr = [];
+        for (let i = 0; i < this.currentSubset.length; i++) {
+            let tile = this.reverseTile(this.currentSubset[i]);
+            if (!this.currentSubset.includes(tile))
+                arr.push(tile);
+        }
+        this.currentSubset = this.currentSubset.concat(arr);
+    }
    
     clearOutput() {
         document.getElementById("txtCardinality").value = "";
         document.getElementById("right-panel2").textContent = "";
         document.getElementById("right-panel3").textContent = "";
+        document.getElementById("right-panel4").textContent = "";
         this.currentSubset = [];
     }
     handleRadChoice() {
